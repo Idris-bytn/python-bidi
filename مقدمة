@@ -1,0 +1,35 @@
+pip install reportlab
+pip install arabic-reshaper
+pip install python-bidi
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from bidi.algorithm import get_display
+from arabic_reshaper import reshape
+
+# Create a PDF file
+file_path = "Elon_Musk_Introduction_Arabic.pdf"
+c = canvas.Canvas(file_path, pagesize=A4)
+
+# Arabic text
+introduction_text = """
+إيلون ماسك هو اسم لا يمكن إلا أن يثير الإعجاب والدهشة في الوقت ذاته. من رجل مبتدئ في صناعة البرمجيات إلى أن يصبح أغنى شخص في العالم،
+لم يكن الطريق الذي سلكه إيلون مسطحًا أو سهلاً. فقد كانت حياته مليئة بالتحديات التي خاضها بشجاعة وعزيمة لا تلين، وتمكن من تحويلها إلى نجاحات غير مسبوقة
+في عالم التكنولوجيا والفضاء والطاقة المتجددة.
+"""
+
+# Prepare text for Arabic display
+reshaped_text = reshape(introduction_text)
+bidi_text = get_display(reshaped_text)
+
+# Write text to PDF
+c.setFont("Helvetica", 12)
+text_object = c.beginText(40, A4[1] - 40)
+text_object.setFont("Helvetica", 12)
+text_object.setRightToLeft(True)
+text_object.textLines(bidi_text)
+c.drawText(text_object)
+
+# Save the PDF
+c.save()
+
+print(f"PDF created at {file_path}")
